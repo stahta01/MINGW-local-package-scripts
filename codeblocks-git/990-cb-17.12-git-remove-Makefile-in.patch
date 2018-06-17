@@ -1,0 +1,24 @@
+From fc3b7753447442e8496b0b60740a6be576bfa7be Mon Sep 17 00:00:00 2001
+From: Tim S <stahta01@users.sourceforge.net>
+Date: Sat, 10 Mar 2018 18:25:32 -0500
+Subject: [PATCH] Remove Makefile.in from gitignore
+
+---
+ .gitignore | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/.gitignore b/.gitignore
+index 90a7510b2..ed56e1102 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -15,7 +15,6 @@ autorevision
+ cb_console_runner
+ cb_console_runner29
+ *.bmarks
+-Makefile.in
+ /build*
+ /configure
+ /aclocal.m4
+-- 
+2.16.2.windows.1
+

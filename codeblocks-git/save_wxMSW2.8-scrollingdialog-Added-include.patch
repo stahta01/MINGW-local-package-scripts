@@ -1,0 +1,14 @@
+--- a/src/sdk/scrollingdialog.cpp
++++ b/src/sdk/scrollingdialog.cpp
+@@ -32,6 +32,10 @@
+ #if !wxCHECK_VERSION(3, 0, 0)
+ IMPLEMENT_CLASS(wxDialogLayoutAdapter, wxObject)
+ 
++    #ifdef __WXMSW__
++        #include "wx/msw/wrapwin.h"
++    #endif
++
+ /*!
+  * Dialog helper. This contains the extra members that in wxWidgets 3.0 will be
+  * in wxDialogBase.
+-- 
