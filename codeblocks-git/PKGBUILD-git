@@ -1,0 +1,182 @@
+# Maintainer: Tim S <stahta01@gmail.com>
+
+_realname='codeblocks'
+pkgbase="mingw-w64-${_realname}-git"
+pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}-git"
+provides=("${MINGW_PACKAGE_PREFIX}-${_realname}")
+conflicts=("${MINGW_PACKAGE_PREFIX}-${_realname}")
+_cb_ver=17.12
+pkgver=17.12.r11428.p12
+pkgrel=1
+url='http://codeblocks.org/'
+pkgdesc='Cross-platform C/C++ IDE (mingw-w64)'
+license=('GPL')
+arch=(any)
+depends=(
+  "${MINGW_PACKAGE_PREFIX}-gcc-libs"
+  "${MINGW_PACKAGE_PREFIX}-hunspell"
+  "${MINGW_PACKAGE_PREFIX}-drmingw"
+  "${MINGW_PACKAGE_PREFIX}-wxWidgets"
+)
+makedepends=(
+  "${MINGW_PACKAGE_PREFIX}-boost"
+  "${MINGW_PACKAGE_PREFIX}-gcc"
+  "${MINGW_PACKAGE_PREFIX}-libtool"
+  "${MINGW_PACKAGE_PREFIX}-pkg-config"
+  "autoconf"
+  "automake-wrapper"
+  "git"
+  "make"
+  "patch"
+  "zip"
+)
+source=(
+  ${_realname}::git+'https://github.com/stahta01/codeblocks_https_metadata.git'
+
+  # Fix-sdk-configure-make-build.patch is safe to apply to upstream CB SVN Repo.
+  011-cb-17.12-Fix-sdk-configure-make-build.patch
+  # Fix-compiler-configure-make-build.patch is safe to apply to upstream CB SVN Repo.
+  012-cb-16.01-Fix-compiler-configure-make-build.patch
+  # Fix-coreapp-configure-make-build.patch is safe to apply to upstream CB SVN Repo.
+  013-cb-16.01-Fix-coreapp-configure-make-build.patch
+
+  # Not safe to apply to upstream CB SVN Repo.
+  020-cb-16.01-Add-exe-to-auto_revision.patch
+  # Not safe to apply to upstream CB SVN Repo.
+  021-cb-16.01-Make-win32-pch-files.patch
+
+  # Fix-ConsoleRunner-build-error.patch is safe to apply to upstream CB SVN Repo.
+  201-cb-16.01-Fix-ConsoleRunner-build-error.patch
+  # Fix-wxGTKwin-build.patch is safe to apply to upstream CB SVN Repo.
+  202-cb-17.12-Fix-wxGTKwin-build.patch
+  # Fix-win32-detect.patch is safe to apply to upstream CB SVN Repo.
+  200-cb-17.12r11428-Fix-win32-detect.patch
+
+  # No idea if Fix-sdk-pch-issue.patch is safe to apply to upstream CB SVN Repo.
+  300-cb-16.01-Fix-sdk-pch-issue.patch
+  # No idea if Fix-cb-startup-issue.patch is safe to apply to upstream CB SVN Repo.
+  302-cb-17.12-Fix-cb-startup-issue.patch
+  # Not safe to apply to upstream CB SVN Repo.
+  303-cb-17.12-Change-default-personality-to-msys2.patch
+
+  # Not safe to apply to upstream CB SVN Repo.
+  990-cb-17.12-git-remove-Makefile-in.patch
+
+  # Not safe to apply to upstream CB SVN Repo.
+  001-cb-17.12r11227-Do-not-include-boost-m4-files.patch
+)
+# 000-009 Changes that must be done before bootstrap (configure.ac)
+# 010-099 Build changes that can be done after bootstrap (Makefile.am)
+# 010-019 Build changes that can be pushed to Code::Blocks upstream
+# 020-029 Build changes that can *not* be pushed to Code::Blocks upstream
+# 200-299 Code changes that can be pushed to Code::Blocks upstream
+# 300-399 Code changes that can *not* be pushed to Code::Blocks upstream
+# 400-499 Add CB Projects for use under MSys2
+# 990-999 Special patch files used to support patch file creation
+
+sha256sums=('SKIP'
+            '2bcea2501694f07665ef2dcac3521bd4b1f9c7f9461b80bc2b1da09e347d6bfa'
+            'b9c57b333c67376fcd5b3ca598a2d7f5873455ac28f1e03bb305efcfde6c9678'
+            'edb04577ce448c82634d2e7a41d2be949a842d588a35a0fbfad54d72b1a68324'
+            '3152a93b562f7d6342c07a1382c673ff65c54ecc33da594dc09857877b5490ff'
+            '49ff09b508dfe9f7c6fbaf4e19bdb75029dc6615542d42b27a52488f231c1efd'
+            'b2c293ab7c96705f0d56c8c11f6da32f7341e0b1703969b16da9c323ecae23ca'
+            '66663387eb759f3dfa4f85bc6cfb4c8a75c17fceaa7d11551dac51f1f43b8415'
+            '762406d8a76baba355b79e88607f204a7ceb7abf264a84da4e619af2ba5413e4'
+            '7cda901c48fe679cabf418cf353b5b188c3c3afa823628087297f160d053afd3'
+            'f58d5e3f3a8d8cb27216dcecbe429bdc32c37437db7bd29029e5578e7156085d'
+            'c32e55e35b1d5c6e415b275cb598757de82d67b52c87f2d9597094176719eafd'
+            'ef9c95092f9bac0b30d93de27b366335de8e7404a962215617759e52c594b75e'
+            'f0343396887025337789a5ffac90179c7d4f9811ebf5181dcce3e48464a90619')
+
+options=('!strip')
+
+pkgver() {
+  cd ${srcdir}/${_realname}
+  # maybe use contents of revision.m4 to get better version numbers
+  # "git svn" seems to be broken too often to depend on it working.
+  local _svnrev=`git log --grep="^git-svn-id: " --first-parent -1 | tail -n1 | sed "s|.*\@\([0-9]\+\).*|\1|"`
+  printf "%s.%s.%s"  "$_cb_ver" "r$_svnrev" "p$(git rev-list --count origin/master..HEAD)"
+}
+
+prepare() {
+  cd ${srcdir}/${_realname}
+
+# Remove Folders that I think might cause MSys2 build issues
+  rm -fr src/exchndl
+
+# Remove Folders to cause issues
+#  rm -fr src/templates
+
+  GIT_AM="git am --committer-date-is-author-date"
+
+  # Revert 990-cb-17.12-git-remove-Makefile-in.patch if it was already applied
+  git checkout -- .gitignore
+
+  # git am is refusing to apply this patch
+  patch -p1 -i "${srcdir}"/990-cb-17.12-git-remove-Makefile-in.patch
+
+  ${GIT_AM} "${srcdir}"/001-cb-17.12r11227-Do-not-include-boost-m4-files.patch
+
+  ${GIT_AM} "${srcdir}"/011-cb-17.12-Fix-sdk-configure-make-build.patch
+  ${GIT_AM} "${srcdir}"/012-cb-16.01-Fix-compiler-configure-make-build.patch
+  ${GIT_AM} "${srcdir}"/013-cb-16.01-Fix-coreapp-configure-make-build.patch
+  ${GIT_AM} "${srcdir}"/020-cb-16.01-Add-exe-to-auto_revision.patch
+  ${GIT_AM} "${srcdir}"/021-cb-16.01-Make-win32-pch-files.patch
+
+  ${GIT_AM} "${srcdir}"/200-cb-17.12r11428-Fix-win32-detect.patch
+  ${GIT_AM} "${srcdir}"/201-cb-16.01-Fix-ConsoleRunner-build-error.patch
+  ${GIT_AM} "${srcdir}"/202-cb-17.12-Fix-wxGTKwin-build.patch
+
+  ${GIT_AM} "${srcdir}"/300-cb-16.01-Fix-sdk-pch-issue.patch
+  ${GIT_AM} "${srcdir}"/302-cb-17.12-Fix-cb-startup-issue.patch
+  ${GIT_AM} "${srcdir}"/303-cb-17.12-Change-default-personality-to-msys2.patch
+
+  PATH="${MINGW_PREFIX}/bin":"$PATH" ./bootstrap
+}
+
+build() {
+  cd ${srcdir}/${_realname}
+
+  local _MINGW_PREFIX_WIN="$(cygpath -am "${MINGW_PREFIX}")"
+  # This export needed if NOT using plain "wx-config"
+  # export WX_CONFIG_PATH="${MINGW_PREFIX}/bin/wx-config-${_wx_basever} --prefix=${_MINGW_PREFIX_WIN}"
+  export WX_CONFIG_PATH="${MINGW_PREFIX}/bin/wx-config --static=no --prefix=${_MINGW_PREFIX_WIN}"
+
+  ##This export needed for spellchecker plugin
+  export CB_HUNSPELL_LIBS="`${MINGW_PREFIX}/bin/pkg-config hunspell --libs-only-l`"
+  # --host=${MSYSTEM_CHOST} does NOT work on MSys2; but, I think something should be used on Cygwin.
+  # MSYS2_ARG_CONV_EXCL="--prefix=" \# This did not fix libtool error message
+  PATH="${MINGW_PREFIX}/bin":"$PATH" ./configure --with-platform=win32 \
+    --disable-pch \
+    --prefix=${MINGW_PREFIX} \
+    --host=${MINGW_CHOST} \
+    --target=${MINGW_CHOST} \
+    --build=${MINGW_CHOST} \
+    --with-contrib-plugins=yes,-Valgrind,-keybinder,-exporter,-NassiShneiderman,-help,-wxsmithcontrib,-wxsmithaui
+  # The Valgrind program does NOT work under Win32
+  # keybinder has major build problem
+  #   wxMSW30: cbkeybinder.cpp:38:41: fatal error: wx/msw/private/keyboard.h: No such file or directory
+  # exporter has minor build problem
+  #   src/pdfannotation.cpp:24:10: fatal error: wx/pdfannotation.h: No such file or directory
+  # NassiShneiderman has link errors because it does not link to the boost library
+  # wxsmithcontrib has build errors
+  # wxsmithaui has build errors
+  #   ../../../../src/plugins/contrib/wxSmith/wxwidgets/properties/../../properties/wxseditenumproperty.h:27:10: fatal error: ../wxwidgets/wxscodercontext.h: No such file or directory
+  # help plugin has runtime issues; it crashes when enabled
+  PATH="${MINGW_PREFIX}/bin":"$PATH" make --jobs=1
+}
+
+package() {
+  cd ${srcdir}/${_realname}
+
+  make DESTDIR="$pkgdir" install
+
+  # Rename files
+  mv ${pkgdir}${MINGW_PREFIX}/bin/${MINGW_CHOST}-cb_console_runner.exe ${pkgdir}${MINGW_PREFIX}/bin/cb_console_runner.exe
+  mv ${pkgdir}${MINGW_PREFIX}/bin/${MINGW_CHOST}-cb_share_config.exe   ${pkgdir}${MINGW_PREFIX}/bin/cb_share_config.exe
+  mv ${pkgdir}${MINGW_PREFIX}/bin/${MINGW_CHOST}-codeblocks.exe        ${pkgdir}${MINGW_PREFIX}/bin/codeblocks.exe
+
+  # License files
+  install -Dm644 COPYING "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/COPYING.txt"
+}

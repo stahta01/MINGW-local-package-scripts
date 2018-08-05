@@ -1,0 +1,137 @@
+# Maintainer: Tim S <stahta01@gmail.com>
+
+_realname='codeblocks'
+_wx_basever=3.1
+_wx_libname="wxgtk${_wx_basever}"
+pkgbase="${_realname}-${_wx_libname}-svn"
+pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}-${_wx_libname}-svn"
+provides=(
+  "${MINGW_PACKAGE_PREFIX}-${_realname}"
+)
+conflicts=(
+  "${MINGW_PACKAGE_PREFIX}-${_realname}"
+)
+pkgver=r11023
+pkgrel=1
+url='http://codeblocks.org/'
+pkgdesc='Cross-platform C/C++ IDE (mingw-w64)'
+license=('GPL')
+arch=(any)
+depends=(
+  "${MINGW_PACKAGE_PREFIX}-gcc-libs"
+  "${MINGW_PACKAGE_PREFIX}-hunspell"
+  "${MINGW_PACKAGE_PREFIX}-drmingw"
+  "${MINGW_PACKAGE_PREFIX}-${_wx_libname}"
+)
+makedepends=(
+  "${MINGW_PACKAGE_PREFIX}-boost"
+  "zip"
+  "svn"
+)
+_svn_uri=http://svn.code.sf.net/p/codeblocks/code/trunk
+source=(
+  "0101_DLLwin-Makefile.am-Added-CODEBLOCKS_NT.patch"
+  "0102_win32-Makefile.am-Added-CODEBLOCKS_NT_compiler.patch"
+  "0106_msys2-PCH.patch"
+  "0109_msys2-Makefile.am-Added-CODEBLOCKS_NT.patch"
+
+  "0301_win32-Change-WXDLLIMPEXP_SCI-value.patch"
+  "0302_win32-ConsoleRunner-Replaced__WXMSW__.patch"
+  "0303_wxGTKwin-modify-defined-tests.patch"
+  "0304_wxGTKwin-add-include-wrapwin.h.patch"
+  "0305_msys2-all-local-auto_revision.exe.patch"
+
+  "0401_msys2-InitPaths.patch"
+  "0402_msys2-remove-lib-prefix.patch"
+)
+sha256sums=(
+  '5338444d5558f0315724906c54c8a9d67f868866e1494ca3b1d09431cb9ee5eb'
+  '40dc72e5e96b2e42f7b551c8184f399431c4261d38ed061d6ac8dafcf0b363dd'
+  '9e2464773bbe00a653e421d77b57d2e5a493986df61cfc862769e655ae5c6a26'
+  '283f8edf8caf60e345469d9d386f3f8cda45b0630b2dd978cf4523325291dd1b'
+
+  'a606a845ebe547321c190a22a3851d88343634fa2323716fd578793138639be2'
+  'b3fcd6c7bb3841931e17ebb6a4a377e7fb94b2cf956c1c332b0f3d537b1ad883'
+  'deadeee596ee3843b95a3b1e22520642780935520069c82afe213126a29eb97a'
+  '414ecc6a738fef3bc81e0f4eeb13d45445cf897710f515535c00c2358ca9d77e'
+  '6cadf7620439b6a88533a2a6289e6de3c3f57f4fed48a28bd980bc24ea156af0'
+
+  '82259fec07d14d39c46e9fc54136db616340e6d3b96d4e8a25f8d807ad460526'
+  'b25c3ef9197234f2021ccc5c1e60d72301b3d331c5245a26c6776edc47d22417'
+)
+options=('!strip')
+
+pkgver() {
+  cd "${srcdir}/${_realname}"
+  printf "r%s" "$(svnversion | tr -d 'A-z')"
+}
+
+prepare() {
+  cd "${srcdir}"
+  if [[ -d ${_realname}/.svn ]]; then
+    (cd ${_realname} && \
+      rm -f src/sdk/cbplugin.cpp && \
+      rm -f src/sdk/filemanager.cpp && \
+      svn cleanup --remove-unversioned --remove-ignored && \
+      svn update --ignore-externals && \
+      svn revert -R . )
+  else
+    svn checkout --ignore-externals $_svn_uri ${_realname}
+  fi
+
+  cd "${srcdir}/${_realname}"
+
+# 000x Patches needed to format project with correct linefeeds
+# 010x Patches needed to bootstrap/autoconf/automake project
+  patch -p1 -i "${srcdir}"/0101_DLLwin-Makefile.am-Added-CODEBLOCKS_NT.patch
+  patch -p1 -i "${srcdir}"/0102_win32-Makefile.am-Added-CODEBLOCKS_NT_compiler.patch
+  patch -p1 -i "${srcdir}"/0106_msys2-PCH.patch
+  patch -p1 -i "${srcdir}"/0109_msys2-Makefile.am-Added-CODEBLOCKS_NT.patch
+# 020x Patches needed to configure project
+# 030x Patches needed to build/make project
+  patch -p1 -i "${srcdir}"/0301_win32-Change-WXDLLIMPEXP_SCI-value.patch
+  patch -p1 -i "${srcdir}"/0302_win32-ConsoleRunner-Replaced__WXMSW__.patch
+  patch -p1 -i "${srcdir}"/0303_wxGTKwin-modify-defined-tests.patch
+  patch -p1 -i "${srcdir}"/0304_wxGTKwin-add-include-wrapwin.h.patch
+  patch -p1 -i "${srcdir}"/0305_msys2-all-local-auto_revision.exe.patch
+# 040x Patches needed to run project
+  patch -p1 -i "${srcdir}"/0401_msys2-InitPaths.patch
+  patch -p1 -i "${srcdir}"/0402_msys2-remove-lib-prefix.patch
+# 050x Patches that convert project to saving all configs in MSys2 folders
+
+  ./bootstrap
+}
+
+build() {
+  cd "${srcdir}/${_realname}"
+
+  local _MINGW_PREFIX_WIN="$(cygpath -am "${MINGW_PREFIX}")"
+  # This export needed if NOT using plain "wx-config"
+  export WX_CONFIG_PATH="${MINGW_PREFIX}/bin/wx-config-${_wx_basever} --prefix=${_MINGW_PREFIX_WIN}"
+
+  ##This export needed for spellchecker plugin
+  export CB_HUNSPELL_LIBS="`${MINGW_PREFIX}/bin/pkg-config hunspell --libs-only-l`"
+  ./configure --prefix=${MINGW_PREFIX} \
+    --disable-pch \
+    --disable-xpmanifest \
+    --with-contrib-plugins=yes,-Valgrind,-exporter,-FileManager
+#
+# Valgrind does NOT work under Windows OS; even under CygWin it fails to work.
+#
+# Plugins with problems that was caused by wxGTK MIME support issue.
+#   codesnippets
+#   help
+#   exporter
+#   wxcontrib
+#
+  make
+}
+
+package() {
+  cd "${srcdir}/${_realname}"
+
+  make DESTDIR="$pkgdir" install
+
+  # License files
+  install -Dm644 COPYING "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/COPYING.txt"
+}
