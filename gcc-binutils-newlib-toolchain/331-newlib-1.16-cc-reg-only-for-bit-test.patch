@@ -1,0 +1,26 @@
+From ec345ea101c932a82acd57d783b7062756edec47 Mon Sep 17 00:00:00 2001
+From: dfffffff <dflamand@gmail.com>
+Date: Fri, 29 Jul 2016 10:28:58 -0400
+Subject: [PATCH 31/37] cc reg only for bit test
+
+---
+ newlib/libc/machine/m6809/include/machine/regs.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/newlib/libc/machine/m6809/include/machine/regs.h b/newlib/libc/machine/m6809/include/machine/regs.h
+index f972361..21d9491 100644
+--- a/newlib/libc/machine/m6809/include/machine/regs.h
++++ b/newlib/libc/machine/m6809/include/machine/regs.h
+@@ -20,7 +20,8 @@ enum cc_flags
+ 	CC_E = 0x80,
+ };
+ 
+-register unsigned char __cc asm ("cc");
++/* for bit testing CC reg */
++const volatile register unsigned char __cc asm ("cc");
+ 
+ 
+ /*
+-- 
+2.19.1.windows.1
+

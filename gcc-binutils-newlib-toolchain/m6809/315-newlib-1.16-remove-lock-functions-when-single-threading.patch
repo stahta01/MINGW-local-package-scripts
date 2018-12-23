@@ -1,0 +1,77 @@
+From d48523e48d4a5a4c66354e0053d207e7d998d8c0 Mon Sep 17 00:00:00 2001
+From: dfffffff <dflamand@gmail.com>
+Date: Sun, 29 May 2016 07:52:29 -0400
+Subject: [PATCH 15/37] remove lock functions when single threading
+
+---
+ newlib/libc/stdlib/mallocr.c | 4 ++++
+ newlib/libc/stdlib/mlock.c   | 8 +++-----
+ 2 files changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/newlib/libc/stdlib/mallocr.c b/newlib/libc/stdlib/mallocr.c
+index e7cdace..2b40bf0 100644
+--- a/newlib/libc/stdlib/mallocr.c
++++ b/newlib/libc/stdlib/mallocr.c
+@@ -303,8 +303,10 @@ extern "C" {
+ #define HAVE_MMAP 0
+ #define MORECORE(size) _sbrk_r(reent_ptr, (size))
+ #define MORECORE_CLEARS 0
++#ifndef __SINGLE_THREAD__
+ #define MALLOC_LOCK __malloc_lock(reent_ptr)
+ #define MALLOC_UNLOCK __malloc_unlock(reent_ptr)
++#endif
+ 
+ #ifdef __CYGWIN__
+ # undef _WIN32
+@@ -319,6 +321,7 @@ extern "C" {
+ #endif
+ #endif
+ 
++#ifndef __SINGLE_THREAD__
+ #if __STD_C
+ extern void __malloc_lock(struct _reent *);
+ extern void __malloc_unlock(struct _reent *);
+@@ -326,6 +329,7 @@ extern void __malloc_unlock(struct _reent *);
+ extern void __malloc_lock();
+ extern void __malloc_unlock();
+ #endif
++#endif
+ 
+ #if __STD_C
+ #define RARG struct _reent *reent_ptr,
+diff --git a/newlib/libc/stdlib/mlock.c b/newlib/libc/stdlib/mlock.c
+index 888c986..10abe08 100644
+--- a/newlib/libc/stdlib/mlock.c
++++ b/newlib/libc/stdlib/mlock.c
+@@ -40,25 +40,23 @@ that it already holds.
+ #include <sys/lock.h>
+ 
+ #ifndef __SINGLE_THREAD__
++
+ __LOCK_INIT_RECURSIVE(static, __malloc_lock_object);
+-#endif
+ 
+ void
+ __malloc_lock (ptr)
+      struct _reent *ptr;
+ {
+-#ifndef __SINGLE_THREAD__
+   __lock_acquire_recursive (__malloc_lock_object);
+-#endif
+ }
+ 
+ void
+ __malloc_unlock (ptr)
+      struct _reent *ptr;
+ {
+-#ifndef __SINGLE_THREAD__
+   __lock_release_recursive (__malloc_lock_object);
+-#endif
+ }
+ 
+ #endif
++
++#endif
+-- 
+2.19.1.windows.1
+

@@ -1,0 +1,44 @@
+From 49b71932eff70b820ec170d233ee22c8db376311 Mon Sep 17 00:00:00 2001
+From: Tim S <tim.stahlhut@gmail.com>
+Date: Thu, 10 Jan 2019 23:14:41 -0500
+Subject: [PATCH] newlib-1.20-remove-conflicting-types-from-headers
+
+---
+ newlib/libc/include/signal.h | 1 -
+ newlib/libc/include/string.h | 4 ++--
+ 2 files changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/newlib/libc/include/signal.h b/newlib/libc/include/signal.h
+index 8c50a2e..f90d592 100644
+--- a/newlib/libc/include/signal.h
++++ b/newlib/libc/include/signal.h
+@@ -24,7 +24,6 @@ int	_EXFUN(_raise_r, (struct _reent *, int));
+ #ifndef _REENT_ONLY
+ _sig_func_ptr _EXFUN(signal, (int, _sig_func_ptr));
+ int	_EXFUN(raise, (int));
+-void	_EXFUN(psignal, (int, const char *));
+ #endif
+ 
+ _END_STD_C
+diff --git a/newlib/libc/include/string.h b/newlib/libc/include/string.h
+index cd80ce7..810504d 100644
+--- a/newlib/libc/include/string.h
++++ b/newlib/libc/include/string.h
+@@ -89,12 +89,12 @@ size_t	 _EXFUN(strnlen,(const char *, size_t));
+ char 	*_EXFUN(strsep,(char **, const char *));
+ char	*_EXFUN(strlwr,(char *));
+ char	*_EXFUN(strupr,(char *));
++#ifdef __CYGWIN__
+ #ifndef DEFS_H	/* Kludge to work around problem compiling in gdb */
+ char  *_EXFUN(strsignal, (int __signo));
+ #endif
+-#ifdef __CYGWIN__
+ int     _EXFUN(strtosigno, (const char *__name));
+-#endif
++#endif /* __CYGWIN__ */
+ 
+ /* Recursive version of strerror.  */
+ char *	_EXFUN(_strerror_r, (struct _reent *, int, int, int *));
+-- 
+2.19.1.windows.1
+

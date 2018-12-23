@@ -1,0 +1,41 @@
+From 788fd609dfa122c3d6440d52fb45df9fb562d40e Mon Sep 17 00:00:00 2001
+From: dfffffff <dflamand@gmail.com>
+Date: Tue, 14 Jun 2016 07:45:55 -0400
+Subject: [PATCH 23/37] added target-libgloss to noconfigdirs
+
+---
+ configure    | 3 +++
+ configure.ac | 3 +++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/configure b/configure
+index 18648c7..fc7e66d 100755
+--- a/configure
++++ b/configure
+@@ -2438,6 +2438,9 @@ case "${target}" in
+   m32r-*-*)
+     noconfigdirs="$noconfigdirs ${libgcj}"
+     ;;
++  m6809-*-*)
++    noconfigdirs="$noconfigdirs target-libiberty target-libstdc++-v3 target-libgloss ${libgcj}"
++    ;;
+   m68hc11-*-*|m6811-*-*|m68hc12-*-*|m6812-*-*)
+     noconfigdirs="$noconfigdirs target-libiberty target-libstdc++-v3 ${libgcj}"
+     libgloss_dir=m68hc11
+diff --git a/configure.ac b/configure.ac
+index e6c8eb0..44b8f93 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -715,6 +715,9 @@ case "${target}" in
+   m32r-*-*)
+     noconfigdirs="$noconfigdirs ${libgcj}"
+     ;;
++  m6809-*-*)
++    noconfigdirs="$noconfigdirs target-libiberty target-libstdc++-v3 target-libgloss ${libgcj}"
++    ;;
+   m68hc11-*-*|m6811-*-*|m68hc12-*-*|m6812-*-*)
+     noconfigdirs="$noconfigdirs target-libiberty target-libstdc++-v3 ${libgcj}"
+     libgloss_dir=m68hc11
+-- 
+2.19.1.windows.1
+

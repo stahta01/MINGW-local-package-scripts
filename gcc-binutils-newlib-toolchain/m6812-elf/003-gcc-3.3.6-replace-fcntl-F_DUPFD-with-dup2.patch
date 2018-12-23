@@ -1,0 +1,43 @@
+From fd5165e52e1ae384c69695f4dd012c36b1594c39 Mon Sep 17 00:00:00 2001
+From: Tim S <tim.stahlhut@gmail.com>
+Date: Thu, 27 Dec 2018 10:51:04 -0500
+Subject: [PATCH] replace fcntl/F_DUPFD with dup2
+
+---
+ gcc/fixinc/fixincl.c | 4 ++--
+ gcc/fixinc/procopen.c | 4 ++--
+ 2 file changed
+
+diff --git a/gcc/fixinc/fixincl.c b/gcc/fixinc/fixincl.c
+index ddc2f95..cbebd55 100644
+--- a/gcc/fixinc/fixincl.c
++++ b/gcc/fixinc/fixincl.c
+@@ -876,8 +876,8 @@ internal_fix (read_fd, p_fixd)
+    *  Make the fd passed in the stdin, and the write end of
+    *  the new pipe become the stdout.
+    */
+-  fcntl (fd[1], F_DUPFD, STDOUT_FILENO);
+-  fcntl (read_fd, F_DUPFD, STDIN_FILENO);
++  dup2 (fd[1], STDOUT_FILENO);
++  dup2 (read_fd, STDIN_FILENO);
+ 
+   apply_fix (p_fixd, pz_curr_file);
+   exit (0);
+diff --git a/gcc/fixinc/procopen.c b/gcc/fixinc/procopen.c
+index 98f1226..99f1248 100644
+--- a/gcc/fixinc/procopen.c
++++ b/gcc/fixinc/procopen.c
+@@ -161,8 +161,8 @@ chain_open (stdin_fd, pp_args, p_child)
+    *  Make the fd passed in the stdin, and the write end of
+    *  the new pipe become the stdout.
+    */
+-  fcntl (stdout_pair.write_fd, F_DUPFD, STDOUT_FILENO);
+-  fcntl (stdin_fd, F_DUPFD, STDIN_FILENO);
++  dup2 (stdout_pair.write_fd, STDOUT_FILENO);
++  dup2 (stdin_fd, STDIN_FILENO);
+ 
+   if (*pp_args == (char *) NULL)
+     *pp_args = pz_cmd;
+-- 
+2.19.1.windows.1
+

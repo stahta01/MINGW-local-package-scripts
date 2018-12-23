@@ -1,0 +1,25 @@
+From a67f7f327fbde723fcbec1b9a046184e59409ea7 Mon Sep 17 00:00:00 2001
+From: Brian Dominy <brian@oddchange.com>
+Date: Wed, 24 Jun 2009 16:08:58 -0400
+Subject: Say that 6809 is big-endian.
+
+---
+ newlib/libc/include/machine/ieeefp.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/newlib/libc/include/machine/ieeefp.h b/newlib/libc/include/machine/ieeefp.h
+index b7f0b0d..5aa0207 100644
+--- a/newlib/libc/include/machine/ieeefp.h
++++ b/newlib/libc/include/machine/ieeefp.h
+@@ -105,7 +105,7 @@
+ #endif
+ #endif
+ 
+-#if defined(__m68k__) || defined(__mc68000__)
++#if defined(__m68k__) || defined(__mc68000__) || defined(__m6809__)
+ #define __IEEE_BIG_ENDIAN
+ #endif
+ 
+-- 
+2.19.1.windows.1
+

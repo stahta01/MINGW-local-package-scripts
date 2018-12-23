@@ -1,0 +1,28 @@
+From 5ea202ca1fead1fa39c4de4d21595e9556b23eb6 Mon Sep 17 00:00:00 2001
+From: Brian Dominy <brian@oddchange.com>
+Date: Wed, 24 Jun 2009 19:11:16 -0400
+Subject: [PATCH 11/37] Don't try to emit a .stabs for a linker warning; 6809
+ doesn't support it.
+
+---
+ libgloss/libnosys/warning.h | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/libgloss/libnosys/warning.h b/libgloss/libnosys/warning.h
+index 9232a92..e7bc60f 100644
+--- a/libgloss/libnosys/warning.h
++++ b/libgloss/libnosys/warning.h
+@@ -1,6 +1,10 @@
+ #ifndef __WARNING_H__
+ #define __WARNING_H__
+ 
++#ifdef __m6809__
++#undef HAVE_GNU_LD
++#endif
++
+ #ifdef HAVE_GNU_LD
+ # ifdef HAVE_ELF
+ 
+-- 
+2.19.1.windows.1
+
