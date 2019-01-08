@@ -1,0 +1,38 @@
+From 832395f0538ab7ec92de3f901261b029ebc799a5 Mon Sep 17 00:00:00 2001
+From: Tim S <tim.stahlhut@gmail.com>
+Date: Sun, 13 Jan 2019 22:03:48 -0500
+Subject: Change bug reporting URL and version info
+
+---
+ gcc/version.c                                 |   12 +-
+
+diff --git a/gcc/version.c b/gcc/version.c
+index 75f285aee..0a4761bbf 100644
+--- a/gcc/version.c
++++ b/gcc/version.c
+@@ -2,16 +2,16 @@
+ 
+ /* This is the location of the online document giving instructions for
+    reporting bugs.  If you distribute a modified version of GCC,
+-   please configure with --with-bugurl pointing to a document giving
+-   instructions for reporting bugs to you, not us.  (You are of course
+-   welcome to forward us bugs reported to you, if you determine that
+-   they are not bugs in your modifications.)  */
++   please change this to refer to a document giving instructions for
++   reporting bugs to you, not us.  (You are of course welcome to
++   forward us bugs reported to you, if you determine that they are
++   not bugs in your modifications.)  */
+ 
+-const char bug_report_url[] = BUGURL;
++const char bug_report_url[] = "<URL:https://github.com/stahta01/gcc4.3/issues>";
+ 
+ /* The complete version string, assembled from several pieces.
+    BASEVER, DATESTAMP, DEVPHASE, and REVISION are defined by the
+    Makefile.  */
+ 
+-const char version_string[] = BASEVER DATESTAMP DEVPHASE REVISION;
++const char version_string[] = BASEVER DATESTAMP DEVPHASE REVISION " (gcc6809)";
+ const char pkgversion_string[] = PKGVERSION;
+-- 
+2.19.1.windows.1
+

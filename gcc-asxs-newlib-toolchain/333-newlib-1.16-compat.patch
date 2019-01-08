@@ -1,0 +1,34 @@
+From 7f9e8d36903acf5e05b93a81e5e112b1623c4cc4 Mon Sep 17 00:00:00 2001
+From: dfffffff <dflamand@gmail.com>
+Date: Tue, 30 Aug 2016 19:58:27 -0400
+Subject: [PATCH 34/37] compat
+
+---
+ newlib/libc/machine/m6809/include/machine/regs.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/newlib/libc/machine/m6809/include/machine/regs.h b/newlib/libc/machine/m6809/include/machine/regs.h
+index 21d9491..174ccec 100644
+--- a/newlib/libc/machine/m6809/include/machine/regs.h
++++ b/newlib/libc/machine/m6809/include/machine/regs.h
+@@ -21,7 +21,7 @@ enum cc_flags
+ };
+ 
+ /* for bit testing CC reg */
+-const volatile register unsigned char __cc asm ("cc");
++register const volatile unsigned char __cc asm ("cc");
+ 
+ 
+ /*
+@@ -74,7 +74,7 @@ ASM_DECL __attribute__((naked)) void setstack (const unsigned int s)
+ #if defined(__ABI_STACK__)
+ #error setstack() unsupported at (__NO_INLINE__ && __ABI_STACK__)
+ 	/*asm volatile ("puls\td,x\n\tleas\t-2,x\n\ttfr\td,pc");*/
+-#elif defined(__ABI_BX__)
++#elif defined(__ABI_BX__) || defined(__ABI_REGS__)
+ 	asm volatile ("puls\td\n\tleas\t,x\n\ttfr\td,pc");
+ #else
+ #error UNKNOWN ABI
+-- 
+2.19.1.windows.1
+

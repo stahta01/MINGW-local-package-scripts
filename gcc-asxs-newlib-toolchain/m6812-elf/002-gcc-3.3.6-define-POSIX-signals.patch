@@ -1,0 +1,66 @@
+From fcaa015291d3b7905c91a87b2986cdc488d9e71a Mon Sep 17 00:00:00 2001
+From: Tim S <tim.stahlhut@gmail.com>
+Date: Thu, 27 Dec 2018 09:16:53 -0500
+Subject: [PATCH] define POSIX signals
+
+---
+ gcc/fixinc/fixincl.c | 18 +++++++++++++++++-
+ gcc/fixinc/server.c | 15 +++++++++++++++
+ 2 file changed
+
+diff --git a/gcc/fixinc/fixincl.c b/gcc/fixinc/fixincl.c
+index ddc2f95..2b0f30a 100644
+--- a/gcc/fixinc/fixincl.c
++++ b/gcc/fixinc/fixincl.c
+@@ -32,6 +32,22 @@ Boston, MA 02111-1307, USA.  */
+ #if ! defined( SIGCHLD ) && defined( SIGCLD )
+ #  define SIGCHLD SIGCLD
+ #endif
++#ifndef SIGQUIT
++#define SIGQUIT SIGTERM
++#endif
++#ifndef SIGIOT
++#define SIGIOT SIGTERM
++#endif
++#ifndef SIGPIPE
++#define SIGPIPE SIGTERM
++#endif
++#ifndef SIGALRM
++#define SIGALRM SIGTERM
++#endif
++#ifndef SIGKILL
++#define SIGKILL SIGTERM
++#endif
++
+ #ifndef SEPARATE_FIX_PROC
+ #include "server.h"
+ #endif
+diff --git a/gcc/fixinc/server.c b/gcc/fixinc/server.c
+index e58a09f..589239c 100644
+--- a/gcc/fixinc/server.c
++++ b/gcc/fixinc/server.c
+@@ -50,6 +50,21 @@
+ #include "ansidecl.h"
+ #include "system.h"
+ #include <signal.h>
++#ifndef SIGQUIT
++#define SIGQUIT SIGTERM
++#endif
++#ifndef SIGIOT
++#define SIGIOT SIGTERM
++#endif
++#ifndef SIGPIPE
++#define SIGPIPE SIGTERM
++#endif
++#ifndef SIGALRM
++#define SIGALRM SIGTERM
++#endif
++#ifndef SIGKILL
++#define SIGKILL SIGTERM
++#endif
+ 
+ #include "server.h"
+ 
+-- 
+2.19.1.windows.1
+

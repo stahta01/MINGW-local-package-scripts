@@ -1,0 +1,27 @@
+From 940ee256ab8fcc0bd67b8b50eda5c165659c1796 Mon Sep 17 00:00:00 2001
+From: Tim S <tim.stahlhut@gmail.com>
+Date: Thu, 27 Dec 2018 18:18:48 -0500
+Subject: [PATCH 2/2] define kill
+
+---
+ gcc/system.h | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/gcc/system.h b/gcc/system.h
+index 654c85f..a0c5752 100644
+--- a/gcc/system.h
++++ b/gcc/system.h
+@@ -446,6 +446,10 @@ extern void abort PARAMS ((void));
+ # define mkdir(a,b) mkdir(a)
+ #endif
+ 
++#ifndef HAVE_KILL
++# define kill(p,s) raise (s)
++#endif
++
+ /* Provide a way to print an address via printf.  */
+ #ifndef HOST_PTR_PRINTF
+ # ifdef HAVE_PRINTF_PTR
+-- 
+2.19.1.windows.1
+
