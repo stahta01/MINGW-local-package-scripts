@@ -57,6 +57,8 @@ exit_with_msg() {
   #mkdir -p build-boot-gcc-${MSYSTEM_CARCH} && \
   #cd build-boot-gcc-${MSYSTEM_CARCH}
 
+  mkdir -p ${_source_folder}/compiler-${MSYSTEM_CARCH}/m6809-unknown/bin
+  cp ${MINGW_INSTALL_PREFIX}/${_target}/bin/* ${_source_folder}/compiler-${MSYSTEM_CARCH}/m6809-unknown/bin/
     #--enable-lite-exit                    \
     #--disable-newlib-global-atexit        \
     #--disable-newlib-atexit-dynamic-alloc \
@@ -132,21 +134,30 @@ exit_with_msg() {
   fi
 
 
-
-  bootgccpath="${_source_folder}/compiler-${MSYSTEM_CARCH}/bin"
-  PATH=/mingw32/bin:/usr/bin
-  PATH="${bootgccpath}:${MINGW_INSTALL_PREFIX}/bin:${MINGW_INSTALL_PREFIX}/${_target}/bin:${PATH}"
   NEWLIB_CFLAGS+=" -g -ffunction-sections -fdata-sections"
   cd $_source_folder
-  rm -rf build-newlib-${MSYSTEM_CARCH}
-  mkdir -p build-newlib-${MSYSTEM_CARCH} && cd build-newlib-${MSYSTEM_CARCH}
+  rm -rf build-newlib-${MSYSTEM_CARCH}; mkdir -p build-newlib-${MSYSTEM_CARCH} && \
+  cd build-newlib-${MSYSTEM_CARCH}
+
+  bootgccpath="${_source_folder}/compiler-${MSYSTEM_CARCH}/bin:${_source_folder}/compiler-${MSYSTEM_CARCH}/libexec/gcc/${_target}/4.3.6"
+
+  PATH=${MINGW_PREFIX}/bin:${MINGW_PREFIX}/${MINGW_CHOST}/bin:/usr/bin \
+  PATH="${bootgccpath}:${MINGW_INSTALL_PREFIX}/bin:${MINGW_INSTALL_PREFIX}/${_target}/bin:${PATH}" \
+  export PATH;
+  
+  echo $PATH
+
+  CC_FOR_TARGET="${MINGW_INSTALL_PREFIX}/bin/${_target}-gcc" \
+  AR_FOR_TARGET="${MINGW_INSTALL_PREFIX}/bin/${_target}-ar" \
+  LD_FOR_TARGET="${MINGW_INSTALL_PREFIX}/bin/${_target}-ld" \
+  RANLIB_FOR_TARGET="${MINGW_INSTALL_PREFIX}/bin/${_target}-ranlib.exe" \
+  CFLAGS="${NEWLIB_CFLAGS}" \
   ${SRC_FOLDER_NEWLIB}/configure \
+    --enable-newlib-elix-level=1 \
     --build=${MINGW_CHOST} \
     --host=${MINGW_CHOST} \
     --target=${_target} \
     --program-prefix="${_target}-" \
-    --prefix="${MINGW_INSTALL_PREFIX}" \
-    CFLAGS="${NEWLIB_CFLAGS}" \
-    PATH="${bootgccpath}:${MINGW_INSTALL_PREFIX}/bin:${MINGW_INSTALL_PREFIX}/${_target}/bin:${PATH}" || exit_with_msg "newlib configure failure" && \
-  make -j1 PATH="${bootgccpath}:${MINGW_INSTALL_PREFIX}/bin:${MINGW_INSTALL_PREFIX}/${_target}/bin:${PATH}" || exit_with_msg "newlib make failure" && \
-  make -j1 install PATH="${bootgccpath}:${MINGW_INSTALL_PREFIX}/bin:${MINGW_INSTALL_PREFIX}/${_target}/bin:${PATH}" || exit_with_msg "newlib install failure"
+    --prefix="${MINGW_INSTALL_PREFIX}" || exit_with_msg "newlib configure failure" && \
+  make -j1 || exit_with_msg "newlib make failure" && \
+  make -j1 install || exit_with_msg "newlib install failure"
