@@ -131,7 +131,11 @@ exit_with_msg() {
     # autoconf
   fi
 
+
+
   bootgccpath="${_source_folder}/compiler-${MSYSTEM_CARCH}/bin"
+  PATH=/mingw32/bin:/usr/bin
+  PATH="${bootgccpath}:${MINGW_INSTALL_PREFIX}/bin:${MINGW_INSTALL_PREFIX}/${_target}/bin:${PATH}"
   NEWLIB_CFLAGS+=" -g -ffunction-sections -fdata-sections"
   cd $_source_folder
   rm -rf build-newlib-${MSYSTEM_CARCH}
