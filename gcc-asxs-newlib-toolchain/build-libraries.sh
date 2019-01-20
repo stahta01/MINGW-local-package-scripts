@@ -26,6 +26,28 @@ exit_with_msg() {
   make -C ../binutils clean
   make -C ../binutils
 
+  # Install ASXX files
+  mkdir -p "${MINGW_INSTALL_PREFIX}/${_target}/bin"
+  cp -f ../binutils/ar         "${MINGW_INSTALL_PREFIX}/${_target}/bin/ar"
+  cp -f ../binutils/as         "${MINGW_INSTALL_PREFIX}/${_target}/bin/as"
+  cp -f ../binutils/ld         "${MINGW_INSTALL_PREFIX}/${_target}/bin/ld"
+  cp -f ../binutils/ranlib.exe "${MINGW_INSTALL_PREFIX}/${_target}/bin/ranlib.exe"
+  
+  sed -i "s|@AS_PREFIX@|${MINGW_INSTALL_PREFIX}|" "${MINGW_INSTALL_PREFIX}/${_target}/bin/ar"
+  sed -i "s|@AS_PREFIX@|${MINGW_INSTALL_PREFIX}|" "${MINGW_INSTALL_PREFIX}/${_target}/bin/as"
+  sed -i "s|@AS_PREFIX@|${MINGW_INSTALL_PREFIX}|" "${MINGW_INSTALL_PREFIX}/${_target}/bin/ld"
+
+  mkdir -p "${MINGW_INSTALL_PREFIX}/bin"
+  mv asxmak/cygwin/exe/*.exe   "${MINGW_INSTALL_PREFIX}/bin/"
+  cp -f ../binutils/ar         "${MINGW_INSTALL_PREFIX}/bin/${_target}-ar"
+  cp -f ../binutils/as         "${MINGW_INSTALL_PREFIX}/bin/${_target}-as"
+  cp -f ../binutils/ld         "${MINGW_INSTALL_PREFIX}/bin/${_target}-ld"
+  mv    ../binutils/ranlib.exe "${MINGW_INSTALL_PREFIX}/bin/${_target}-ranlib.exe"
+
+  sed -i "s|@AS_PREFIX@|${MINGW_INSTALL_PREFIX}|" "${MINGW_INSTALL_PREFIX}/bin/${_target}-ar"
+  sed -i "s|@AS_PREFIX@|${MINGW_INSTALL_PREFIX}|" "${MINGW_INSTALL_PREFIX}/bin/${_target}-as"
+  sed -i "s|@AS_PREFIX@|${MINGW_INSTALL_PREFIX}|" "${MINGW_INSTALL_PREFIX}/bin/${_target}-ld"
+
   #echo "Build Newlib boot GCC"
   ## Build cross-compiler just to compile newlib
   #rm -rf "${_source_folder}/compiler-${MSYSTEM_CARCH}"
@@ -47,7 +69,13 @@ exit_with_msg() {
     SRC_FOLDER_NEWLIB=${VCFOLDER_NEWLIB}
   fi
 
-  #../src-gcc/configure \
+  if [[ ${VERSION_GCC} != "git"  ]] ; then
+    SRC_FOLDER_GCC=../src-gcc
+  else
+    SRC_FOLDER_GCC=${VCFOLDER_GCC}
+  fi
+
+  #${SRC_FOLDER_GCC}/configure \
     #--build="${MINGW_CHOST}" \
     #--host="${MINGW_CHOST}" \
     #--target="${_target}" \
@@ -96,11 +124,11 @@ exit_with_msg() {
   echo "Build newlib"
   if [[ ${VERSION_NEWLIB} == "git" ]] ; then
     cd ${SRC_FOLDER_NEWLIB}
-    libtoolize --force --copy
-    aclocal
-    autoheader
-    automake --add-missing --include-deps --copy
-    autoconf
+    # libtoolize --force --copy
+    # aclocal
+    # autoheader
+    # automake-1.11 --add-missing --include-deps --copy
+    # autoconf
   fi
 
   bootgccpath="${_source_folder}/compiler-${MSYSTEM_CARCH}/bin"

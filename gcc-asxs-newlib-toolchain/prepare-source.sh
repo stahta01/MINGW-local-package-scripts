@@ -14,20 +14,30 @@
   if [[ ${VERSION_NEWLIB} != "git" ]] ; then
     mkdir src-newlib
   fi
-  mkdir src-gcc
+  if [[ ${VERSION_GCC} != "git" ]] ; then
+    mkdir src-gcc
+  fi
 
   echo "Extract ${ZIP_BASENAME_AS6809}"
   unzip ${_downloaded_files}/${ZIP_BASENAME_AS6809}.zip -d src-asxs
   if [[ ${VERSION_NEWLIB} == "git" ]] ; then
     cd ${VCFOLDER_NEWLIB}
+    echo "checkout git branch for newlib"
     git checkout ${VCBRANCH_NEWLIB} || exit 1
     cd ${_source_folder}
   else
     echo "Extract ${TAR_BASENAME_NEWLIB}"
     tar -xzf ${_downloaded_files}/${TAR_BASENAME_NEWLIB}.tar.gz -C src-newlib --strip-components 1 --checkpoint=500
   fi
-  echo "Extract ${TAR_BASENAME_GCC}"
-  tar -xjf ${_downloaded_files}/${TAR_BASENAME_GCC}.tar.bz2 -C src-gcc --strip-components 1 --checkpoint=500
+  if [[ ${VERSION_GCC} == "git" ]] ; then
+    cd ${VCFOLDER_GCC}
+    echo "checkout git branch for GCC"
+    git checkout ${VCBRANCH_GCC} || exit 1
+    cd ${_source_folder}
+  else
+    echo "Extract ${TAR_BASENAME_GCC}"
+    tar -xjf ${_downloaded_files}/${TAR_BASENAME_GCC}.tar.bz2 -C src-gcc --strip-components 1 --checkpoint=500
+  fi
 
   cd ${_source_folder}/src-asxs
   if [[ ${VERSION_AS6809:0:4} == "5p10" && ${_target:0:5} == "m6809" ]] ; then
@@ -37,28 +47,30 @@
     patch -p1 --forward -i ../../204-as-5p10-Set-M6809STRICT-0.patch
   fi
 
-  cd ${_source_folder}/src-gcc
-  if [[ ${VERSION_GCC:0:5} == "3.3.6" ]] ; then
-    patch -p1 --forward -i ../../001-gcc-3.3.6-s12x-20121024_changes.patch
-    patch -p1 --forward -i ../../002-gcc-3.3.6-define-POSIX-signals.patch
-    patch -p1 --forward -i ../../003-gcc-3.3.6-replace-fcntl-F_DUPFD-with-dup2.patch
-    patch -p1 --forward -i ../../004-gcc-3.3.6-define-kill.patch
-  fi
-  if [[ ${VERSION_GCC:0:3} == "4.3" || ${VERSION_GCC:0:3} == "4.4" ]] ; then
-    patch -p1 --forward -i ../../001-gcc-4.3-fixed-compile-issue-with-gcc-5-in-gcc-toplev.patch
-  fi
-  if [[ ${VERSION_GCC:0:3} == "4.3" ]] ; then
-    patch -p1 --forward -i ../../002-gcc-4.3-Fix-texi-docs-syntax-errors.patch
-    if [[ ${_target:0:5} == "m6809" ]] ; then
-      patch -p1 --forward -i ../../003-gcc-4.3-compound-commit-using-as6809-assembler.patch
+  if [[ ${VERSION_GCC} != "git" ]] ; then
+    cd ${_source_folder}/src-gcc
+    if [[ ${VERSION_GCC:0:5} == "3.3.6" ]] ; then
+      patch -p1 --forward -i ../../001-gcc-3.3.6-s12x-20121024_changes.patch
+      patch -p1 --forward -i ../../002-gcc-3.3.6-define-POSIX-signals.patch
+      patch -p1 --forward -i ../../003-gcc-3.3.6-replace-fcntl-F_DUPFD-with-dup2.patch
+      patch -p1 --forward -i ../../004-gcc-3.3.6-define-kill.patch
     fi
-    patch -p1 --forward -i ../../004-gcc-4.3-Change-bug-reporting-URL.patch
-  fi
-  if [[ ${VERSION_GCC:0:3} == "4.4" ]] ; then
-    patch -p1 --forward -i ../../104-gcc-4.4-Fix-texi-docs-syntax-errors.patch
-  fi
-  if [[ ${VERSION_GCC:0:3} == "4.5" ]] ; then
-    patch -p1 --forward -i ../../105-gcc-4.5-Fix-texi-docs-syntax-errors.patch
+    if [[ ${VERSION_GCC:0:3} == "4.3" || ${VERSION_GCC:0:3} == "4.4" ]] ; then
+      patch -p1 --forward -i ../../001-gcc-4.3-fixed-compile-issue-with-gcc-5-in-gcc-toplev.patch
+    fi
+    if [[ ${VERSION_GCC:0:3} == "4.3" ]] ; then
+      patch -p1 --forward -i ../../002-gcc-4.3-Fix-texi-docs-syntax-errors.patch
+      if [[ ${_target:0:5} == "m6809" ]] ; then
+        patch -p1 --forward -i ../../003-gcc-4.3-compound-commit-using-as6809-assembler.patch
+      fi
+      patch -p1 --forward -i ../../004-gcc-4.3-Change-bug-reporting-URL.patch
+    fi
+    if [[ ${VERSION_GCC:0:3} == "4.4" ]] ; then
+      patch -p1 --forward -i ../../104-gcc-4.4-Fix-texi-docs-syntax-errors.patch
+    fi
+    if [[ ${VERSION_GCC:0:3} == "4.5" ]] ; then
+      patch -p1 --forward -i ../../105-gcc-4.5-Fix-texi-docs-syntax-errors.patch
+    fi
   fi
 
   if [[ ${VERSION_NEWLIB} != "git" ]] ; then
