@@ -1,0 +1,61 @@
+From 65ef631d6455cb52fcf685fe2bdb1c4cee49fe61 Mon Sep 17 00:00:00 2001
+From: Tim S <tim.stahlhut@gmail.com>
+Date: Tue, 22 Jan 2019 17:41:47 -0500
+Subject: [PATCH 31/37] Add CCAS and CCASFLAGS to sys/m6809sim/configure.in
+
+---
+ newlib/libc/sys/m6809sim/configure    | 8 ++++++++
+ newlib/libc/sys/m6809sim/configure.in | 8 +++++++-
+ 2 files changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/newlib/libc/sys/m6809sim/configure b/newlib/libc/sys/m6809sim/configure
+index b79abcb..e8c6608 100755
+--- a/newlib/libc/sys/m6809sim/configure
++++ b/newlib/libc/sys/m6809sim/configure
+@@ -584,6 +584,8 @@ PACKAGE_URL=''
+ ac_unique_file="kill.c"
+ ac_subst_vars='LTLIBOBJS
+ LIBOBJS
++CCASFLAGS
++CCAS
+ target_alias
+ host_alias
+ build_alias
+@@ -1664,6 +1666,12 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
+ 
+ 
+ 
++# Newlib uses CCAS and CCASFLAGS; so, define them.
++: ${CCAS='$(CC)'}
++: ${CCASFLAGS='$(CFLAGS)'}
++
++
++
+ ac_aux_dir=
+ for ac_dir in ../../../.. "$srcdir"/../../../..; do
+   if test -f "$ac_dir/install-sh"; then
+diff --git a/newlib/libc/sys/m6809sim/configure.in b/newlib/libc/sys/m6809sim/configure.in
+index 9137370..e439b42 100644
+--- a/newlib/libc/sys/m6809sim/configure.in
++++ b/newlib/libc/sys/m6809sim/configure.in
+@@ -1,10 +1,16 @@
+-dnl This is the newlib/libc/machine/m68k configure.in file.
++dnl This is the newlib/libc/sys/m6809sim configure.in file.
+ dnl Process this file with autoconf to produce a configure script.
+ 
+ AC_PREREQ(2.59)
+ AC_INIT([newlib],[NEWLIB_VERSION])
+ AC_CONFIG_SRCDIR([kill.c])
+ 
++# Newer automakes demand CCAS and CCASFLAGS.
++: ${CCAS='$(CC)'}
++: ${CCASFLAGS='$(CFLAGS)'}
++AC_SUBST(CCAS)
++AC_SUBST(CCASFLAGS)
++
+ dnl Can't be done in NEWLIB_CONFIGURE because that confuses automake. 
+ AC_CONFIG_AUX_DIR(../../../..)
+ 
+-- 
+2.19.1.windows.1
+
