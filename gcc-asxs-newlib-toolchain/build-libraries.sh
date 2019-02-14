@@ -52,10 +52,25 @@ exit_with_msg() {
   # Build cross-compiler just to compile newlib
   rm -rf "${_source_folder}/compiler-${MSYSTEM_CARCH}"
   mkdir -p "${_source_folder}/compiler-${MSYSTEM_CARCH}"
+
   cd $_source_folder
-  rm -rf build-boot-gcc-${MSYSTEM_CARCH}
-  mkdir -p build-boot-gcc-${MSYSTEM_CARCH} && \
-  cd build-boot-gcc-${MSYSTEM_CARCH}
+
+  if [[ ${VERSION_NEWLIB} != "git"  ]] ; then
+    SRC_FOLDER_NEWLIB=../src-newlib
+  else
+    SRC_FOLDER_NEWLIB=${VCFOLDER_NEWLIB}
+  fi
+  if [[ ${VERSION_GCC} != "git"  ]] ; then
+    SRC_FOLDER_GCC=../src-gcc
+    BUILD_FOLDER_GCC=${_source_folder}/build-boot-gcc-${MSYSTEM_CARCH}
+  else
+    SRC_FOLDER_GCC=..
+    BUILD_FOLDER_GCC=${VCFOLDER_GCC}/build-boot-gcc-${MSYSTEM_CARCH}
+  fi
+
+  rm -rf ${BUILD_FOLDER_GCC}
+  mkdir -p ${BUILD_FOLDER_GCC} && \
+  cd ${BUILD_FOLDER_GCC}
 
   mkdir -p ${_source_folder}/compiler-${MSYSTEM_CARCH}/m6809-unknown/bin
   cp ${MINGW_INSTALL_PREFIX}/${_target}/bin/* ${_source_folder}/compiler-${MSYSTEM_CARCH}/m6809-unknown/bin/
@@ -64,18 +79,6 @@ exit_with_msg() {
     #--disable-newlib-atexit-dynamic-alloc \
     #--disable-isl-version-check \
     #--without-headers \
-
-  if [[ ${VERSION_NEWLIB} != "git"  ]] ; then
-    SRC_FOLDER_NEWLIB=../src-newlib
-  else
-    SRC_FOLDER_NEWLIB=${VCFOLDER_NEWLIB}
-  fi
-
-  if [[ ${VERSION_GCC} != "git"  ]] ; then
-    SRC_FOLDER_GCC=../src-gcc
-  else
-    SRC_FOLDER_GCC=${VCFOLDER_GCC}
-  fi
 
   ${SRC_FOLDER_GCC}/configure \
     --src=${SRC_FOLDER_GCC} \
