@@ -3,6 +3,9 @@ From: Tim S <tim.stahlhut@gmail.com>
 Date: Sat, 12 Jan 2019 23:11:30 -0500
 Subject: [PATCH] changed seek offset from int to _fpos_t
 
+This patch is based on the work of
+David Flamand https://gitlab.com/dfffffff/newlib-6809
+
 ---
  newlib/libc/include/sys/reent.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
