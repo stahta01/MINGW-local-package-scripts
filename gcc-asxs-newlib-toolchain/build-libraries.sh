@@ -48,14 +48,14 @@ exit_with_msg() {
   sed -i "s|@AS_PREFIX@|${MINGW_INSTALL_PREFIX}|" "${MINGW_INSTALL_PREFIX}/bin/${_target}-as"
   sed -i "s|@AS_PREFIX@|${MINGW_INSTALL_PREFIX}|" "${MINGW_INSTALL_PREFIX}/bin/${_target}-ld"
 
-  #echo "Build Newlib boot GCC"
-  ## Build cross-compiler just to compile newlib
-  #rm -rf "${_source_folder}/compiler-${MSYSTEM_CARCH}"
-  #mkdir -p "${_source_folder}/compiler-${MSYSTEM_CARCH}"
-  #cd $_source_folder
-  #rm -rf build-boot-gcc-${MSYSTEM_CARCH}
-  #mkdir -p build-boot-gcc-${MSYSTEM_CARCH} && \
-  #cd build-boot-gcc-${MSYSTEM_CARCH}
+  echo "Build Newlib boot GCC"
+  # Build cross-compiler just to compile newlib
+  rm -rf "${_source_folder}/compiler-${MSYSTEM_CARCH}"
+  mkdir -p "${_source_folder}/compiler-${MSYSTEM_CARCH}"
+  cd $_source_folder
+  rm -rf build-boot-gcc-${MSYSTEM_CARCH}
+  mkdir -p build-boot-gcc-${MSYSTEM_CARCH} && \
+  cd build-boot-gcc-${MSYSTEM_CARCH}
 
   mkdir -p ${_source_folder}/compiler-${MSYSTEM_CARCH}/m6809-unknown/bin
   cp ${MINGW_INSTALL_PREFIX}/${_target}/bin/* ${_source_folder}/compiler-${MSYSTEM_CARCH}/m6809-unknown/bin/
@@ -77,46 +77,47 @@ exit_with_msg() {
     SRC_FOLDER_GCC=${VCFOLDER_GCC}
   fi
 
-  #${SRC_FOLDER_GCC}/configure \
-    #--build="${MINGW_CHOST}" \
-    #--host="${MINGW_CHOST}" \
-    #--target="${_target}" \
-    #--program-prefix="${_target}-" \
-    #--prefix="${_source_folder}/compiler-${MSYSTEM_CARCH}" \
-    #--with-sysroot="${_source_folder}/compiler-${MSYSTEM_CARCH}" \
-    #--enable-languages="c" \
-    #--enable-multilib \
-    #--enable-interwork \
-    #--enable-newlib-reent-small           \
-    #--disable-werror \
-    #--disable-nls \
-    #--disable-shared \
-    #--disable-threads \
-    #--disable-lto \
-    #--disable-libmudflap \
-    #--disable-newlib-supplied-syscalls    \
-    #--disable-newlib-fvwrite-in-streamio  \
-    #--disable-newlib-fseek-optimization   \
-    #--disable-newlib-wide-orient          \
-    #--disable-newlib-unbuf-stream-opt     \
-    #--disable-libffi \
-    #--disable-libgomp \
-    #--disable-libquadmath \
-    #--disable-libssp \
-    #--disable-libstdcxx-pch \
-    #--disable-libsanitizer \
-    #--disable-decimal-float \
-    #--disable-tls \
-    #--without-cloog \
-    #--with-system-zlib \
-    #--with-gnu-as --with-gnu-ld \
-    #--with-libelf \
-    #--with-newlib \
-    #--with-build-sysroot=${SRC_FOLDER_NEWLIB}/newlib/libc/include \
-    #--with-build-time-tools="${MINGW_INSTALL_PREFIX}/bin" \
-    #CPPFLAGS="-g -O0" || exit_with_msg "boot GCC configure failure" && \
-  #make -j1 all-gcc || exit_with_msg "boot GCC make failure" && \
-  #make -j1 install-gcc || exit_with_msg "boot GCC install failure"
+  ${SRC_FOLDER_GCC}/configure \
+    --src=${SRC_FOLDER_GCC} \
+    --build="${MINGW_CHOST}" \
+    --host="${MINGW_CHOST}" \
+    --target="${_target}" \
+    --program-prefix="${_target}-" \
+    --prefix="${_source_folder}/compiler-${MSYSTEM_CARCH}" \
+    --with-sysroot="${_source_folder}/compiler-${MSYSTEM_CARCH}" \
+    --enable-languages="c" \
+    --enable-multilib \
+    --enable-interwork \
+    --enable-newlib-reent-small           \
+    --disable-werror \
+    --disable-nls \
+    --disable-shared \
+    --disable-threads \
+    --disable-lto \
+    --disable-libmudflap \
+    --disable-newlib-supplied-syscalls    \
+    --disable-newlib-fvwrite-in-streamio  \
+    --disable-newlib-fseek-optimization   \
+    --disable-newlib-wide-orient          \
+    --disable-newlib-unbuf-stream-opt     \
+    --disable-libffi \
+    --disable-libgomp \
+    --disable-libquadmath \
+    --disable-libssp \
+    --disable-libstdcxx-pch \
+    --disable-libsanitizer \
+    --disable-decimal-float \
+    --disable-tls \
+    --without-cloog \
+    --with-system-zlib \
+    --with-gnu-as --with-gnu-ld \
+    --with-libelf \
+    --with-newlib \
+    --with-build-sysroot=${SRC_FOLDER_NEWLIB}/newlib/libc/include \
+    --with-build-time-tools="${MINGW_INSTALL_PREFIX}/bin" \
+    CPPFLAGS="-g -O0" || exit_with_msg "boot GCC configure failure" && \
+  make -j1 all-gcc || exit_with_msg "boot GCC make failure" && \
+  make -j1 install-gcc || exit_with_msg "boot GCC install failure"
 
     #--enable-newlib-io-pos-args \
     #--enable-newlib-io-c99-formats \
