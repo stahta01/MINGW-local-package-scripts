@@ -76,28 +76,29 @@
   if [[ ${VERSION_NEWLIB} != "git" ]] ; then
     cd ${_source_folder}/src-newlib
     if [[ ${VERSION_NEWLIB:0:6} == "1.16.0" && ${_target:0:5} == "m6809" ]] ; then
-      patch -p1 --forward -i ../../302-newlib-1.16-changed-seek-offset-from-int-to-_fpos_t.patch
-      patch -p1 --forward -i ../../312-newlib-1.16-Add-noconfigdirs-for-m6809.patch
-      patch -p1 --forward -i ../../313-newlib-1.16-Add-libgloss_dir-m6809.patch
-      patch -p1 --forward -i ../../314-newlib-1.16-Patch-newlib-with-new-subdirectories-and-build-suppo.patch
-      patch -p1 --forward -i ../../315-newlib-1.16-Import-CoCo-system-files.patch
-      patch -p1 --forward -i ../../316-newlib-1.16-Say-that-6809-is-big-endian.patch
-      patch -p1 --forward -i ../../317-newlib-1.16-Configure-jmpbuf-size-for-6809.patch
-      patch -p1 --forward -i ../../318-newlib-1.16-Add-6809-machines-systems-to-subdirs.patch
-      patch -p1 --forward -i ../../319-newlib-1.16-Add-m6809-to-libgloss-subdirs.patch
-      patch -p1 --forward -i ../../320-newlib-1.16-Don-t-try-to-emit-a-.stabs-for-a-linker-warning-6809.patch
-      patch -p1 --forward -i ../../321-newlib-1.16-Fix-read-and-write-system-call-return-codes.patch
-      patch -p1 --forward -i ../../322-newlib-1.16-make-_POINTER_INT-proper-size.patch
-      patch -p1 --forward -i ../../323-newlib-1.16-remove-lock-functions-when-single-threading.patch
-      patch -p1 --forward -i ../../324-newlib-1.16-updated-sys-config.h.patch
-      patch -p1 --forward -i ../../325-newlib-1.16-improved-setjmp-longjmp.patch
-      patch -p1 --forward -i ../../326-newlib-1.16-added-optimized-memcpy-memset.patch
-      patch -p1 --forward -i ../../327-newlib-1.16-minor-changes-to-config.patch
-      patch -p1 --forward -i ../../328-newlib-1.16-added-setdp-to-regs.h.patch
-      patch -p1 --forward -i ../../329-newlib-1.16-fixed-rand-returning-only-zero.patch
-      patch -p1 --forward -i ../../330-newlib-1.16-improved-regs.h.patch
-      patch -p1 --forward -i ../../331-newlib-1.16-cc-reg-only-for-bit-test.patch
-      patch -p1 --forward -i ../../332-newlib-1.16-added-support-for-__ABI_STACK__.patch
-      patch -p1 --forward -i ../../333-newlib-1.16-compat.patch
+      patch --forward -p1 -i ../../301-newlib-1.15-df-changed-seek-offset-from-int-to-_fpos_t.patch
+      patch --forward -p1 -i ../../302-newlib-1.16-include-string-h.patch
+
+      patch --forward -p1 -i ../../305-newlib-1.15-edit-config-sub.patch
+      patch --forward -p1 -i ../../306-newlib-1.15-edit-newlib-configure-host.patch
+
+      patch --forward -p1 -i ../../310-newlib-1.15-bcd-modified-source-files.patch
+      patch --forward -p1 -i ../../311-newlib-1.15-bcd-added-source-files.patch
+      patch --forward -p1 -i ../../312-newlib-1.15-bcd-added-.m4-files.patch
+      patch --forward -p1 -i ../../313-newlib-1.15-bcd-added-.am-files.patch
+      patch --forward -p1 -i ../../314-newlib-1.15-bcd-added-Makefile.in-files.patch
+      patch --forward -p1 -i ../../315-newlib-1.15-bcd-added-configure.in-files.patch
+      patch --forward -p1 -i ../../316-newlib-1.15-bcd-added-configure-files.patch
+      patch --forward -p1 -i ../../317-newlib-1.15-df-modified-source-files.patch
+      patch --forward -p1 -i ../../318-newlib-1.15-df-added-source-files.patch
+      patch --forward -p1 -i ../../319-newlib-1.15-df-modified-build-files-except-for-configure-files.patch
+      patch --forward -p1 -i ../../324-newlib-1.16-Add-m6809-to-configure.ac.patch
+      patch --forward -p1 -i ../../325-newlib-1.15-Add-coco-and-m6809sim-to-newlib-libc-machine-configu.patch
+      patch --forward -p1 -i ../../326-newlib-1.15-Add-m6809-to-libgloss-configure.in.patch
+      patch --forward -p1 -i ../../327-newlib-1.16-Add-m6809-to-newlib-libc-machine-configure.in.patch
+      patch --forward -p1 -i ../../328-newlib-1.16-Regenerate-configure.patch
+      patch --forward -p1 -i ../../329-newlib-1.16-Regenerate-libgloss-configure.patch
+      patch --forward -p1 -i ../../330-newlib-1.16-Regenerate-newlib-libc-machine-configure.patch
+      patch --forward -p1 -i ../../331-newlib-1.16-Regenerate-newlib-libc-sys-configure.patch
     fi
   fi
